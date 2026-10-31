@@ -36,13 +36,13 @@
 #define HAL_MODULE_ENABLED
   /*#define HAL_ADC_MODULE_ENABLED   */
 /*#define HAL_CRYP_MODULE_ENABLED   */
-#define HAL_CAN_MODULE_ENABLED
+#define HAL_CAN_MODULE_ENABLED   
 /*#define HAL_CAN_LEGACY_MODULE_ENABLED   */
 /*#define HAL_CEC_MODULE_ENABLED   */
 /*#define HAL_CORTEX_MODULE_ENABLED   */
 #define HAL_CRC_MODULE_ENABLED
 /*#define HAL_DAC_MODULE_ENABLED   */
-/*#define HAL_DMA_MODULE_ENABLED   */
+#define HAL_DMA_MODULE_ENABLED
 /*#define HAL_ETH_MODULE_ENABLED   */
 /*#define HAL_FLASH_MODULE_ENABLED   */
 #define HAL_GPIO_MODULE_ENABLED
@@ -53,7 +53,7 @@
 /*#define HAL_NOR_MODULE_ENABLED   */
 /*#define HAL_NAND_MODULE_ENABLED   */
 /*#define HAL_PCCARD_MODULE_ENABLED   */
-/*#define HAL_PCD_MODULE_ENABLED   */
+#define HAL_PCD_MODULE_ENABLED
 /*#define HAL_HCD_MODULE_ENABLED   */
 /*#define HAL_PWR_MODULE_ENABLED   */
 /*#define HAL_RCC_MODULE_ENABLED   */
@@ -65,7 +65,7 @@
 /*#define HAL_SPI_MODULE_ENABLED   */
 /*#define HAL_SRAM_MODULE_ENABLED   */
 #define HAL_TIM_MODULE_ENABLED
-/*#define HAL_UART_MODULE_ENABLED   */
+#define HAL_UART_MODULE_ENABLED
 /*#define HAL_USART_MODULE_ENABLED   */
 /*#define HAL_WWDG_MODULE_ENABLED   */
 
@@ -388,3 +388,4 @@ void assert_failed(uint8_t* file, uint32_t line);
 #endif
 
 #endif /* __STM32F1xx_HAL_CONF_H */
+

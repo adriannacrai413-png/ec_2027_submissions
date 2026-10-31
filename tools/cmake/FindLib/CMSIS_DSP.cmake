@@ -1,9 +1,6 @@
 FetchContent_Declare(
   cmsis_dsp
-  GIT_REPOSITORY https://github.com/ARM-software/CMSIS-DSP.git
-  GIT_TAG v1.17.1
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
+  URL C:/Users/sky/PinyCore_cache/CMSIS-DSP-v1.17.1.tar.gz
   SOURCE_DIR "${THIRD_PARTY_DIR}/CMSIS-DSP")
 
 set(CMSISCORE "${soc_folder}/hal/Drivers/CMSIS")

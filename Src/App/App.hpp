@@ -24,4 +24,7 @@ private:
     std::unique_ptr<ServoPwm> lxServo_;
 #endif
 
+private:
+    void initBreath(); // PWM+DMA 呼吸灯初始化（TIM3_CH1/PA6），由 App::init 调用
+
 };

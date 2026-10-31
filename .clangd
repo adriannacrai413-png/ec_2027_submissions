@@ -1,3 +1,8 @@
+CompileFlags:
+  Add:
+    - "--gcc-toolchain=C:/Program Files (x86)/Arm/GNU Toolchain mingw-w64-i686-arm-none-eabi"
+    - "-stdlib=libstdc++"
+    - "--target=arm-none-eabi"
 Diagnostics:
   UnusedIncludes: Strict
   Includes:

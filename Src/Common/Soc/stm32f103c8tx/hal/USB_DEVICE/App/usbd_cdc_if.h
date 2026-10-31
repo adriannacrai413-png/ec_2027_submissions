@@ -49,8 +49,9 @@
   * @{
   */
 /* Define size for the receive and transmit buffer over CDC */
-#define APP_RX_DATA_SIZE  1024
-#define APP_TX_DATA_SIZE  1024
+/* 由 1024 压缩到 256：F103C8 只有 20KB RAM，vofa+/调试数据量足够 */
+#define APP_RX_DATA_SIZE  256
+#define APP_TX_DATA_SIZE  256
 /* USER CODE BEGIN EXPORTED_DEFINES */
 
 /* USER CODE END EXPORTED_DEFINES */
