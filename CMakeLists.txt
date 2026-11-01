@@ -46,8 +46,9 @@ target_link_libraries(
 )
 
 if(NOT RTOS_DEBUG)
-  target_compile_options(freertos_kernel PRIVATE -O3 -g0)
-  target_compile_options(freertos_kernel_port PRIVATE -O3 -g0)
+  # FreeRTOS 用 -Os 而不是 -O3：实测 queue.c -O3 比 -Os 还大 1.8K
+  target_compile_options(freertos_kernel PRIVATE -Os)
+  target_compile_options(freertos_kernel_port PRIVATE -Os)
 endif()
 
 showmessage()

@@ -37,7 +37,6 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
   extern CRC_HandleTypeDef hcrc;
-  extern UART_HandleTypeDef huart1;
 
 /* USER CODE END ET */
 

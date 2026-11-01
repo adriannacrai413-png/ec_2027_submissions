@@ -2,7 +2,10 @@
 if(NOT EXISTS "${THIRD_PARTY_DIR}/RTT")
   FetchContent_Declare(
     RTT
-    URL C:/Users/sky/PinyCore_cache/RTT-main.tar.gz
+    GIT_REPOSITORY https://github.com/SEGGERMicro/RTT.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
     SOURCE_DIR "${THIRD_PARTY_DIR}/RTT")
   FetchContent_MakeAvailable(RTT)
 endif()
@@ -10,7 +13,10 @@ endif()
 if(NOT EXISTS "${THIRD_PARTY_DIR}/systemview")
   FetchContent_Declare(
     systemview
-    URL C:/Users/sky/PinyCore_cache/SystemView-main.tar.gz
+    GIT_REPOSITORY https://github.com/SEGGERMicro/SystemView.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
     SOURCE_DIR "${THIRD_PARTY_DIR}/systemview")
   FetchContent_MakeAvailable(systemview)
 endif()

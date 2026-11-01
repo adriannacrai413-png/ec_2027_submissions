@@ -58,21 +58,21 @@ private:
     static constexpr uint8_t RX_QUEUE_LENGTH = 4;
 
     void onRxEvent(UART_HandleTypeDef *_huart, uint16_t _position);
-    /* 接收被 HAL 出错重启后，同步软件环形指针（详见 ET08A.cpp 里的说明） */
+
     void onRxRestart();
 
-    /* ---- 帧格式自动探测（只在上电后跑一次）---- */
+
     enum : uint8_t {
-        FORMAT_N81 = 0,        /* 无校验 + 1 停止位（CubeMX 默认值） */
-        FORMAT_E81 = 1,        /* 偶校验 + 1 停止位 */
-        FORMAT_O81 = 2,        /* 奇校验 + 1 停止位 */
+        FORMAT_N81 = 0,        
+        FORMAT_E81 = 1,        
+        FORMAT_O81 = 2,       
         FORMAT_PROBE_COUNT = 3,
         FORMAT_PROBE_DONE = 0xFF,
     };
 
     void applyFrameFormat(uint8_t _format);
 
-    uint8_t probeStep_ = 0; /* 当前探测到第几个候选；FORMAT_PROBE_DONE 表示已锁定 */
+    uint8_t probeStep_ = 0; 
     bool probeActive_ = false;
     uint32_t probeStartTick_ = 0;
     uint32_t probeStartFrames_ = 0;
@@ -100,6 +100,6 @@ private:
     std::atomic<uint32_t> rxEventCount_{0};
     std::atomic<uint32_t> droppedRxBytes_{0};
     std::atomic<uint32_t> lastFrameTick_{0};
-    volatile uint32_t rxRestartCount_ = 0; /* 接收被出错重启的累计次数，供格式探测判定用 */
+    volatile uint32_t rxRestartCount_ = 0; 
     uint32_t lastRecoveryTick_ = 0;
 };

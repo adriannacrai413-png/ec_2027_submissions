@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sdkconfig.h"
+#include <array>
 #if LOG_OUTPUT_RTT
 #include "Output/RttOutput.hpp"
 #endif
@@ -14,6 +15,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include "Singleton.hpp"
 
@@ -54,6 +56,8 @@ public:
 
     template <typename... Args> bool raw(const char *_format, Args &&..._args)
     {
+        static_assert((!std::is_floating_point_v<std::decay_t<Args>> && ...),
+                      "floating point printf is disabled to save flash; use Logger::float2Str()");
         char buffer[MAX_RAW_LENGTH];
         const int length = snprintf(buffer, sizeof(buffer), _format, std::forward<Args>(_args)...);
         const size_t size = std::min(static_cast<size_t>(length), sizeof(buffer) - 1);
@@ -142,6 +146,8 @@ public:
 
     template <typename... Args> bool log(const LogParams &_params, Args &&..._args)
     {
+        static_assert((!std::is_floating_point_v<std::decay_t<Args>> && ...),
+                      "floating point printf is disabled to save flash; use Logger::float2Str()");
         char buffer[MAX_LOG_LENGTH];
         char *ptr = buffer;
         const char *end = buffer + MAX_LOG_LENGTH;
@@ -251,7 +257,12 @@ private:
 
     __always_inline int appendFireWaterChannel(char *_ptr, size_t _remaining, float _value)
     {
-        return snprintf(_ptr, _remaining, "%g", _value);
+        // 用整数拆位拼出 3 位小数，避免引入浮点 printf(约 10KB Flash)
+        if (_remaining < 2) {
+            return 0;
+        }
+        float2Str(_ptr, _remaining, _value);
+        return static_cast<int>(std::strlen(_ptr));
     }
 
 #if LOG_OUTPUT_RTT

@@ -1,6 +1,9 @@
 FetchContent_Declare(
   etl
-  URL C:/Users/sky/PinyCore_cache/etl-20.45.0.tar.gz
+  GIT_REPOSITORY https://github.com/ETLCPP/etl.git
+  GIT_TAG 20.45.0
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
   SOURCE_DIR "${THIRD_PARTY_DIR}/etl")
 
 FetchContent_MakeAvailable(etl)

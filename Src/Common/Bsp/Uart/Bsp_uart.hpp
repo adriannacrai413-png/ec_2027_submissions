@@ -78,8 +78,5 @@ public:
     */
     HAL_StatusTypeDef receiveDma(uint8_t *_pData, uint16_t _size);
 
-    /** @brief Receive until idle using interrupts; dispatch via registerCallback. */
-    HAL_StatusTypeDef receiveIT(uint8_t *_pData, uint16_t _size);
-
     UART_HandleTypeDef *huart_;
 };

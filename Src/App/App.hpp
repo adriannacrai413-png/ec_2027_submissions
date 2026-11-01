@@ -1,3 +1,11 @@
+/*
+ * @Author: MJH 2264698762@qq.com
+ * @Date: 2026-11-01 20:23:47
+ * @LastEditors: MJH 2264698762@qq.com
+ * @LastEditTime: 2026-11-01 22:16:18
+ * @FilePath: \ec_2027_submissions\Src\App\App.hpp
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 #pragma once
 #include "Singleton.hpp"
 #include "sdkconfig.h"
@@ -14,7 +22,7 @@ public:
     void init();
 
     void task();
-
+    void initBreath();
 #if EXTENSION_ET08A
     bool readRcData(ET08A::RcData_s &_data);
     uint32_t receivedRcFrames() const;
@@ -23,8 +31,5 @@ private:
     std::unique_ptr<ET08A> receiver_;
     std::unique_ptr<ServoPwm> lxServo_;
 #endif
-
-private:
-    void initBreath(); // PWM+DMA 呼吸灯初始化（TIM3_CH1/PA6），由 App::init 调用
 
 };

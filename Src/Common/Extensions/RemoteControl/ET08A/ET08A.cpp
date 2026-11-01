@@ -6,10 +6,9 @@
 namespace {
 constexpr uint32_t OFFLINE_RECOVERY_DELAY_MS = 500;
 
-/* ---- 帧格式自动探测参数 ---- */
-/* 每个候选格式观察 400ms。接收机 82 帧/秒，400ms 约能收到 33 帧，足够判定。 */
+
 constexpr uint32_t FORMAT_PROBE_WINDOW_MS = 400;
-/* 允许每个探测窗口内有几次接收重启（切换格式的瞬间会撞上半个字节）。 */
+
 constexpr uint32_t FORMAT_PROBE_MAX_RESTARTS = 4;
 }
 
@@ -40,7 +39,7 @@ HAL_StatusTypeDef ET08A::start()
         onRxEvent(_huart, _position);
     });
 
-    /* 出错时 HAL 会从缓冲区起始地址重新挂起接收，这里同步把软件环归零 */
+
     uart_.registerRxRestartCallback([this](UART_HandleTypeDef *) { onRxRestart(); });
 
     const HAL_StatusTypeDef status = uart_.receiveDma(rxBuffer_.data(), RX_BUFFER_LENGTH);
@@ -94,24 +93,17 @@ HAL_StatusTypeDef ET08A::recoverIfOffline()
     return uart_.receiveDma(rxBuffer_.data(), RX_BUFFER_LENGTH);
 }
 
-/* 切换 USART 的帧格式（校验位/停止位），并重新挂起接收。
- * 注意：这里只改 Init 里的帧格式字段并重新 HAL_UART_Init，不动 GPIO/DMA（MSP 初始化
- * 只在 gState == RESET 时才执行），所以不会影响已经配好的引脚和 DMA 通道。 */
+
 void ET08A::applyFrameFormat(uint8_t _format)
 {
-    /* 先彻底停掉当前接收，并确保 DMA 回到 READY，
-     * 否则后面的 HAL_UARTEx_ReceiveToIdle_DMA 会因为 DMA BUSY 直接失败。 */
+
     (void)HAL_UART_DMAStop(uart_.huart_);
     __HAL_UART_DISABLE_IT(uart_.huart_, UART_IT_IDLE);
     if (uart_.huart_->hdmarx != nullptr) {
         (void)HAL_DMA_Abort(uart_.huart_->hdmarx);
     }
 
-    /* 【关键】STM32 的校验位是占“字长”里的一位：
-     *   M=0 + PCE=1  => 7 个数据位 + 1 个校验位（不是 8 数据位 + 校验位！）
-     *   M=1 + PCE=1  => 8 个数据位 + 1 个校验位（才是我们想要的）
-     * 所以带校验的候选必须把字长设成 9 位，否则收到的字节只有 7 位有效数据，
-     * 帧永远解不出来。DMA 是按 BYTE 取的 DR[7:0]，正好拿到 8 个数据位。 */
+
     switch (_format) {
     case FORMAT_E81:
         uart_.huart_->Init.WordLength = UART_WORDLENGTH_9B;
@@ -131,7 +123,7 @@ void ET08A::applyFrameFormat(uint8_t _format)
 
     (void)HAL_UART_Init(uart_.huart_);
 
-    /* 换了格式，缓冲区和解析状态全部作废 */
+
     xQueueReset(rxQueue_);
     lastRxPosition_ = 0;
     collectingFrame_ = false;
@@ -147,13 +139,13 @@ void ET08A::updateFormatDetection()
         return;
     }
 
-    /* 探测顺序：先试最可能的 8E1，最后是已知能出帧的 8N1 */
+
     constexpr uint8_t PROBE_ORDER[FORMAT_PROBE_COUNT] = { FORMAT_E81, FORMAT_O81, FORMAT_N81 };
 
     const uint32_t now = static_cast<uint32_t>(xTaskGetTickCount());
 
     if (!probeActive_) {
-        /* 还没收到任何字节就先别探：接收机可能还没上电，这时探什么格式都是 0 帧 */
+
         if (rxEventCount_.load(std::memory_order_relaxed) == 0U) {
             return;
         }
@@ -181,7 +173,7 @@ void ET08A::updateFormatDetection()
         return;
     }
 
-    /* 这一轮不合格，换下一个候选 */
+
     ++probeStep_;
     if (probeStep_ >= FORMAT_PROBE_COUNT) {
         applyFrameFormat(FORMAT_N81);
@@ -240,14 +232,7 @@ uint32_t ET08A::droppedRxBytes() const
     return droppedRxBytes_.load(std::memory_order_relaxed);
 }
 
-/* 接收被 HAL 出错重启后的同步处理。
- * HAL 在 ORE/FE/PE 等错误发生后会用 HAL_UARTEx_ReceiveToIdle_DMA 从缓冲区起始地址
- * 重新挂起接收，DMA 写指针回到了 0，所以软件环形指针也必须跟着归零，否则下一次回调
- * 会把上一轮留下的旧字节当成新数据再搬一遍（实测就是“42 字节才拼出一帧”）。
- *
- * 注意：这里【不能】清 collectingFrame_ / framePosition_。
- * 帧格式没锁定时接收可能每毫秒就被重启一次，如果每次重启都把解析状态清掉，
- * 25 字节的帧永远拼不完。解析器靠 0x0F 自己重新同步即可。 */
+
 void ET08A::onRxRestart()
 {
     lastRxPosition_ = 0;
@@ -334,7 +319,7 @@ void ET08A::consumeByte(uint8_t _byte)
         return;
     }
 
-    /* 帧头不对：在缓冲里重新找一个 0x0F 当起点继续 */
+
     uint8_t nextFrameStart = 1;
     while (nextFrameStart < FRAME_LENGTH && frame_[nextFrameStart] != 0x0F) {
         ++nextFrameStart;
@@ -367,10 +352,6 @@ bool ET08A::decodeFrame(RcData_s &_data) const
         static_cast<uint16_t>(((frame_[11] << 3) | (frame_[10] >> 5)) & 0x07FF),
     };
 
-    /* 这里只校验帧头，不再做通道量程校验。
-     * 原因：量程校验一旦把某个端点判成越界，整帧就被丢弃，data_ 会停在最后一个
-     * 合格帧上，表现为“摇杆还没拨到底，值就不动了”。帧格式锁定之后垃圾帧本来就少，
-     * 不值得为此牺牲正常行程。 */
 
     _data.ch0 = static_cast<int16_t>(static_cast<int32_t>(channels[0]) - CH_VALUE_OFFSET);
     _data.ch1 = static_cast<int16_t>(static_cast<int32_t>(CH_VALUE_OFFSET) - channels[1]);

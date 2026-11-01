@@ -139,11 +139,6 @@ HAL_StatusTypeDef Uart::transmitDma(const uint8_t *_pData, uint16_t _size)
 
 HAL_StatusTypeDef Uart::receive(uint8_t *_pData, uint16_t _size) { return HAL_UART_Receive(huart_, _pData, _size, 0); }
 
-HAL_StatusTypeDef Uart::receiveIT(uint8_t *_pData, uint16_t _size)
-{
-    return HAL_UARTEx_ReceiveToIdle_IT(huart_, _pData, _size);
-}
-
 HAL_StatusTypeDef Uart::receiveDma(uint8_t *_pData, uint16_t _size)
 {
     HAL_StatusTypeDef result = HAL_UARTEx_ReceiveToIdle_DMA(huart_, _pData, _size);
@@ -196,12 +191,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *_huart)
      * 只有重启成功才通知上层同步软件环：重启失败时 DMA 写指针并没有归零，
      * 这时如果去清指针反而会把数据读错位。 */
     if (hasRxCallback(_huart)) {
-        if (_huart->hdmarx == nullptr) {
-            HAL_UART_AbortReceive(_huart);
-            notifyRxRestart(_huart);
-            HAL_UARTEx_RxEventCallback(_huart, 0); // Rearm with the original buffer.
-            return;
-        }
         const HAL_StatusTypeDef restartStatus =
             HAL_UARTEx_ReceiveToIdle_DMA(_huart, _huart->pRxBuffPtr, _huart->RxXferSize);
         if (restartStatus == HAL_OK) {
