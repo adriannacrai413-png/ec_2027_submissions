@@ -2,6 +2,9 @@
 
 #define HAL_INCLUDE <stm32f1xx_hal.h>
 
+/*dma*/
+#define SOC_DMA_RAM
+
 /*can*/
 #define SOC_CAN
 #define SOC_CAN_NUM (1)

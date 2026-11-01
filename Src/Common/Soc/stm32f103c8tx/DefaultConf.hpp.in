@@ -1,1 +1,2 @@
+#define LOG_UART huart1
 
