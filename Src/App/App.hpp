@@ -22,7 +22,7 @@ public:
     void init();
 
     void task();
-    void initBreath();
+   
 #if EXTENSION_ET08A
     bool readRcData(ET08A::RcData_s &_data);
     uint32_t receivedRcFrames() const;

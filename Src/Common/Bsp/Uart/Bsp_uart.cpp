@@ -129,7 +129,8 @@ HAL_StatusTypeDef Uart::recvDmaInit(uint8_t *_dstAddress, uint32_t _dataLength)
 
 HAL_StatusTypeDef Uart::transmit(const uint8_t *_pData, uint16_t _size)
 {
-    return HAL_UART_Transmit(huart_, _pData, _size, 0);
+   
+    return HAL_UART_Transmit(huart_, _pData, _size, HAL_MAX_DELAY);
 }
 
 HAL_StatusTypeDef Uart::transmitDma(const uint8_t *_pData, uint16_t _size)

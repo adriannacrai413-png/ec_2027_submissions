@@ -1,11 +1,3 @@
-/*
- * @Author: MJH 2264698762@qq.com
- * @Date: 2026-11-01 23:10:41
- * @LastEditors: MJH 2264698762@qq.com
- * @LastEditTime: 2026-11-02 00:47:27
- * @FilePath: \ec_2027_submissions\Src\Common\Soc\stm32f103c8tx\hal\Core\Src\main.c
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
@@ -202,7 +194,6 @@ static void MX_TIM3_Init(void)
   /* USER CODE END TIM3_Init 0 */
 
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  
   TIM_OC_InitTypeDef sConfigOC = {0};
 
   /* USER CODE BEGIN TIM3_Init 1 */
