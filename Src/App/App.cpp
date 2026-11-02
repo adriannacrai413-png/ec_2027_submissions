@@ -1,5 +1,5 @@
 /*
- * App.cpp 呼吸灯 + 波形上报 + 串口中断接收数字改亮度（最简中断版）
+
  */
 #include "App.hpp"
 #include "FreeRTOS.h"
@@ -12,13 +12,13 @@
 #include "main.h"
 #endif
 
-extern TIM_HandleTypeDef htim3;    // 控制灯的定时器
-extern UART_HandleTypeDef huart1;  // 和电脑通信的串口
+extern TIM_HandleTypeDef htim3;    
+extern UART_HandleTypeDef huart1;  
 
-uint32_t breathTable[200];         // 存 200 个亮度值
-Pwm ledPwm(&htim3, TIM_CHANNEL_1); // 灯接在 htim3 的通道 1（PA6）
+uint32_t breathTable[200];         
+Pwm ledPwm(&htim3, TIM_CHANNEL_1); // 
 
-// ===== USART1 中断接收缓冲：ISR 只入队并置位，task 负责解析执行 =====
+
 static uint8_t s_rxByte;
 static char    s_line[16];
 static volatile uint8_t s_count = 0;
@@ -63,22 +63,15 @@ void App::task()
 
     // 中断攒好一整行后，在任务上下文解析并改亮度
     if (s_ready) {
-        char    line[16];
-        uint8_t n;
+       
+     uint8_t n=s_count;
 
-        taskENTER_CRITICAL();
-        n = s_count;
-        for (uint8_t i = 0; i < n; i++) {
-            line[i] = s_line[i];
-        }
-        s_count  = 0;
-        s_ready = false;
-        taskEXIT_CRITICAL();
+     
 
         int num = 0;
-        for (uint8_t i = 0; i < n; i++) {
-            if (line[i] >= '0' && line[i] <= '9') {
-                num = num * 10 + (line[i] - '0');
+        for (uint8_t i = 0; i < s_count; i++) {
+            if (s_line[i] >= '0' && s_line[i] <= '9') {
+                num = num * 10 + (s_line[i] - '0');
             }
         }
 
@@ -111,7 +104,7 @@ void App::task()
 #endif
 }
 
-// USART1 接收完成中断回调（替代 HAL 弱定义）：只入队，禁止在此操作 PWM / 打日志
+
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance != USART1) {
